@@ -1,0 +1,16 @@
+model StgFile {
+  id           Int       @id @default(autoincrement())
+  fileType     String    @map("file_type") @db.VarChar(20)
+  originalName String    @map("original_name") @db.VarChar(255)
+  name         String    @db.VarChar(255)
+  path         String    @unique @db.VarChar(255)
+  ext          String    @db.VarChar(20)
+  size         Int
+  attributes   Json?
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamp(6)
+  users        User[]
+
+  @@map("stg_files")
+}

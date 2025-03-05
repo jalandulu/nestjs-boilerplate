@@ -1,0 +1,20 @@
+services:
+  ayoojob_api_prod:
+    container_name: ayoojob_api_prod
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: ${NODE_ENV:-production}
+    ports:
+      - "${EXPOSE_PORT:-3000}:3000"
+    env_file:
+      - ../.env.local
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+    networks:
+      - ayoojob_api_prod_network
+    restart: unless-stopped
+
+networks:
+  ayoojob_api_prod_network:
+    driver: bridge

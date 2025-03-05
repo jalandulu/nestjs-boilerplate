@@ -1,0 +1,149 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table notification_tokens {
+  id Int [pk, increment]
+  userId String [not null]
+  type String [not null]
+  token String [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  user users [not null]
+}
+
+Table notifications {
+  id Int [pk, increment]
+  service String [not null]
+  type String [not null]
+  notifiableType String [not null]
+  notifiableId String [not null]
+  data Json [not null]
+  sentAt DateTime
+  readAt DateTime
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+}
+
+Table codes {
+  code String [unique, not null]
+  type String [not null]
+  name String [not null]
+  description String
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  users users [not null]
+  identities identities [not null]
+}
+
+Table stg_files {
+  id Int [pk, increment]
+  fileType String [not null]
+  originalName String [not null]
+  name String [not null]
+  path String [unique, not null]
+  ext String [not null]
+  size Int [not null]
+  attributes Json
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  users users [not null]
+}
+
+Table roles {
+  id Int [pk, increment]
+  name String [not null]
+  slug String [not null]
+  visible Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  identities identities [not null]
+  permissionsOnRoles permissions_on_roles [not null]
+}
+
+Table permissions {
+  id Int [pk, increment]
+  module String [not null]
+  action String [not null]
+  slug String [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  permissionsOnIdentities permissions_on_identities [not null]
+  permissionsOnRoles permissions_on_roles [not null]
+}
+
+Table permissions_on_roles {
+  id Int [pk, increment]
+  roleId Int [not null]
+  permissionId Int [not null]
+  assignedAt DateTime [default: `now()`, not null]
+  permission permissions [not null]
+  role roles [not null]
+}
+
+Table permissions_on_identities {
+  id Int [pk, increment]
+  identityId String [not null]
+  permissionId Int [not null]
+  assignedAt DateTime [default: `now()`, not null]
+  identity identities [not null]
+  permission permissions [not null]
+}
+
+Table identities {
+  id String [pk]
+  roleId Int [not null]
+  username String [not null]
+  password String [not null]
+  status String [not null]
+  verifiedAt DateTime
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  disabledAt DateTime
+  role roles [not null]
+  user users [not null]
+  code codes [not null]
+  permissionsOnIdentities permissions_on_identities [not null]
+}
+
+Table users {
+  id String [pk]
+  type String [not null]
+  name String [not null]
+  email String
+  pictureId Int
+  emailVerifiedAt DateTime
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  deletedAt DateTime
+  identity identities
+  code codes [not null]
+  picture stg_files
+  notificationTokens notification_tokens [not null]
+}
+
+Ref: notification_tokens.userId > users.id
+
+Ref: permissions_on_roles.permissionId > permissions.id
+
+Ref: permissions_on_roles.roleId > roles.id
+
+Ref: permissions_on_identities.identityId > identities.id
+
+Ref: permissions_on_identities.permissionId > permissions.id
+
+Ref: identities.roleId > roles.id
+
+Ref: identities.id - users.id
+
+Ref: identities.status > codes.code
+
+Ref: users.type > codes.code
+
+Ref: users.pictureId > stg_files.id

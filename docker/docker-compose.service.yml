@@ -1,0 +1,47 @@
+services:
+  pg:
+    image: postgres:17-alpine
+    container_name: org_trive_bills_pg
+    restart: always
+    environment:
+      POSTGRES_DB: org_trive_bills
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - org_trive_bills_pg_data:/data
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: org_trive_bills_redis
+    command: redis-server --requirepass password
+    restart: always
+    ports:
+      - "6333:6379"
+    volumes:
+      - org_trive_bills_redis_data:/data
+
+  smtp:
+    image: rnwood/smtp4dev
+    container_name: org_trive_bills_smtp
+    restart: always
+    ports:
+      - "3030:80"
+      - "2525:25"
+
+  mqtt5:
+    image: eclipse-mosquitto
+    container_name: org_trive_bills_mqtt5
+    restart: always
+    ports:
+      - "1883:1883" #default mqtt port
+      - "9001:9001" #default mqtt port for websockets
+    volumes:
+      - ./data/mqtt5_config:/mosquitto/config:rw
+      - ./data/mqtt5_data:/mosquitto/data:rw
+      - ./data/mqtt5_log:/mosquitto/log:rw
+
+volumes:
+  org_trive_bills_pg_data:
+  org_trive_bills_redis_data:
